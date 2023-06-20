@@ -24,7 +24,8 @@ class DatabaseConnection:
             c.execute(sql)
             conn.commit()
             c.close()
-
+            
+            return True
         except:
             print("Error updating database")
-            return None
+            return False

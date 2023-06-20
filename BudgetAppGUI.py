@@ -20,7 +20,6 @@ class mainMenuGUI:
         enter_income_box.grid(row=1,column=1)
         confirm_button.grid(row=2,column=1)
     
-    
     def enter_expenses_gui(self):
         menu_frame.destroy()
         enter_spend_frame.pack()
@@ -35,13 +34,14 @@ class mainMenuGUI:
         confirm_button.grid(row=2,column=1)
 
     def change_week_gui(self):
+        cd = ChangeData()
         menu_frame.destroy()
         change_week_frame.pack()
         current_week = db.fetch("SELECT currentWeek FROM users WHERE username="+current_user)
         current_week_label = Label(change_week_frame,font=("Ariel",12),text="Current Week: ")
         enter_label = Label(change_week_frame,font=("Ariel",12),text="Enter New Week: ")
         enter_week = Entry(change_week_frame,width=70)
-        confirm_button = Button(change_week_frame, text="Confirm New Week",bg="white",width=20,height=3,command=)
+        confirm_button = Button(change_week_frame, text="Confirm New Week",bg="white",width=20,height=3,command=lambda:cd.new_week(enter_week.getint))
         current_week_label.grid(row=0,column=0)
         enter_label.grid(row=1,column=0)
         enter_week.grid(row=1,column=1)
@@ -55,7 +55,14 @@ class mainMenuGUI:
         enter_spend_button.grid(row=6, column=9)
         change_current_button = Button(menu_frame, text="Change Week",bg="white",width=20,height=3,command=self.change_week_gui)
         change_current_button.grid(row=6, column=13)
-        
+
+class ChangeData:
+    def new_week(new_week):
+        if change_week(new_week):
+            pass
+        else:
+            return False
+
 def login_gui(name,password):
     if not authenticate_login(name,password):
         print("Invalid Login")

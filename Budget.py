@@ -15,24 +15,31 @@ def loadProgram(): #loads all the required data needed, such as current week
 def read_from_database():
     pass
 
-def add_income(): #will add user's income to their total budget
+def add_income(income): #will add user's income to their total budget
     pass
 
-def enter_spend(): #will take user to screen to input their spending
+def enter_expenses(expenses): #will take user to screen to input their spending
     pass
 
-def change_week(): #will allow user to change current week
-    pass
+def change_week(new_week,budgetID): #will allow user to change current week
+    if new_week < 1:
+        return False
+    db = DatabaseConnection()
+    return db.execute("UPDATE Budgets SET current_week="+new_week+" WHERE budgetID="+budgetID+";")
+    
 
-def change_num_of_weeks_budget(): #choose how many weeks you need to budget for
-    pass
+def change_num_of_weeks_budget(new_num_weeks,budgetID): #choose how many weeks you need to budget for
+    if new_num_weeks < 1:
+        return False
+    db = DatabaseConnection
+    return db.execute("UPDATE Budgets SET num_weeks="+new_num_weeks+" WHERE budgetID="+budgetID+";")
 
 def view_budget(budget,currentWeek):
     pass
 
 def is_valid_login(name,hash_pass):
     db = DatabaseConnection()
-    user = db.fetch("SELECT * FROM users WHERE username="+name+" AND password=hash_pass")
+    user = db.fetch("SELECT * FROM users WHERE username="+name+" AND password="+hash_pass+";")
     if user != None:
         return True
     else: 
