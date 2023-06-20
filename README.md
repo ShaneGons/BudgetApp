@@ -1,1 +1,1 @@
-# BudgetApp
+# This application allows a user to input a budget and how many weeks they need that budget to last, it will then give them a weekly budget. The user can then input their weekly spend and or income and the weekly budget will adjust accordingly.
