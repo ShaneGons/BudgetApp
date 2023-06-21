@@ -1,7 +1,8 @@
 from sqlite3 import Row
 import tkinter as tk
 from tkinter import *
-from Budget import *
+from BudgetFunctions import *
+import User
 
 window = Tk()
 
@@ -57,23 +58,38 @@ class mainMenuGUI:
         change_current_button.grid(row=6, column=13)
 
 class ChangeData:
-    def new_week(new_week):
-        if change_week(new_week):
+    def new_week(budget, new_week):
+        if budget.change_week(new_week):
             pass
         else:
             return False
+        
+
+class budgetGUI:
+    global budget_frame
+    global current_user
+
+    def run(self):
+        budgets = current_user.get_budgets()
+        budget_frame.pack()
+        
+        
+ 
 
 def login_gui(name,password):
-    if not authenticate_login(name,password):
+    user_id = get_user(name,password)
+    if user_id == None:
         print("Invalid Login")
         login_frame.destroy()
-        main = mainMenuGUI()
-        main.run()
+        main = budgetGUI()
+        main.run(user_id)
     else:
+        current_user = User(user_id)
         print("Valid Login")
 
 def register_gui():
     print("Register")
+
 
 window.title("Budget app")
 screen_height = window.winfo_screenheight()
@@ -83,13 +99,16 @@ window.geometry(str(window_size)+"x"+str(window_size))
 
 #App frames
 login_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
+budget_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
 menu_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
 add_income_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
 enter_spend_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
 change_week_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
+current_user : User()
 
 
 db = DatabaseConnection()
+db.createDatabase()
 current_user = ""
 login_frame.pack()
 name_label = Label(login_frame,font=("Ariel",12),text="Username: ")

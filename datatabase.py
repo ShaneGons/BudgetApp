@@ -13,6 +13,7 @@ class DatabaseConnection:
                             password TEXT NOT NULL
                         );""")
             
+            #final_week is the data the user wants the budget to last till
             c.execute("""CREATE TABLE IF NOT EXISTS tbl_budgets (
                             budget_id INTEGER PRIMARY KEY,
                             user_id INTEGER NOT NULL,
