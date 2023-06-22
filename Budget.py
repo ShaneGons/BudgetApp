@@ -18,5 +18,5 @@ class Budget:
         if new_week < 1:
             return False
         db = DatabaseConnection()
-        return db.execute("UPDATE Budgets SET final_week="+new_week+" WHERE budgetID="+self.budget_id+";")
+        return db.execute("UPDATE Budgets SET final_week=? WHERE budgetID=?", (new_week, self.budget_id))
         

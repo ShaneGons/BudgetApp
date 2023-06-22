@@ -1,4 +1,4 @@
-from sqlite3 import Row
+import sqlite3
 import tkinter as tk
 from tkinter import *
 from BudgetFunctions import *
@@ -57,13 +57,6 @@ class mainMenuGUI:
         change_current_button = Button(menu_frame, text="Change Week",bg="white",width=20,height=3,command=self.change_week_gui)
         change_current_button.grid(row=6, column=13)
 
-class ChangeData:
-    def new_week(budget, new_week):
-        if budget.change_week(new_week):
-            pass
-        else:
-            return False
-        
 
 class budgetGUI:
     global budget_frame
@@ -72,23 +65,54 @@ class budgetGUI:
     def run(self):
         budgets = current_user.get_budgets()
         budget_frame.pack()
+
         
-        
- 
+class ChangeData:
+    def new_week(budget, new_week):
+        if budget.change_week(new_week):
+            pass
+        else:
+            return False
+    
+    def create_user(f_name, password):
+        if create_new_user(f_name, password):
+            print("New User Created")
+            conn = sqlite3.connect('budget.db')
+            c = conn.cursor()
+            c.execute("SELECT * FROM tbl_users")
+            print(c.fetchall())
+            c.close
+            register_frame.destroy() 
+        else:
+            print("Failure to create new user")     
 
 def login_gui(name,password):
     user_id = get_user(name,password)
-    if user_id == None:
+    if user_id == []:
         print("Invalid Login")
-        login_frame.destroy()
-        main = budgetGUI()
-        main.run(user_id)
+        
     else:
-        current_user = User(user_id)
         print("Valid Login")
+        # current_user = User(user_id)
+        # main = budgetGUI()
+        # main.run(user_id)
+        
 
 def register_gui():
-    print("Register")
+    login_frame.destroy()
+    cd = ChangeData
+    register_frame.pack()
+    name_label = Label(register_frame,font=("Ariel",12),text="Name: ")
+    name_box = Entry(register_frame,width=70)
+    pass_box = Entry(register_frame,width=70)
+    password_label = Label(register_frame,font=("Ariel",12),text="Password: ")
+    name_label.grid(row=2,column=1)
+    name_box.grid(row=2,column=2)
+    password_label.grid(row=3,column=1)
+    pass_box.grid(row=3,column=2)
+    confirm_button = Button(register_frame,text="Confirm",bg="white",width=20,height=3,command=lambda: cd.create_user(name_box.get(),pass_box.get()))
+    confirm_button.grid(row=4,column=2)
+
 
 
 window.title("Budget app")
@@ -99,16 +123,15 @@ window.geometry(str(window_size)+"x"+str(window_size))
 
 #App frames
 login_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
+register_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
 budget_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
 menu_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
 add_income_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
 enter_spend_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
 change_week_frame = Frame(window,bd=2,width=window_size,height=window_size,bg="grey")
-current_user : User()
+current_user = None
 
 
-db = DatabaseConnection()
-db.createDatabase()
 current_user = ""
 login_frame.pack()
 name_label = Label(login_frame,font=("Ariel",12),text="Username: ")
@@ -121,7 +144,7 @@ password_label.grid(row=3,column=1)
 pass_box.grid(row=3,column=2)
 login_button = Button(login_frame,text="Login",bg="white",width=20,height=3,command=lambda: login_gui(name_box.get(),pass_box.get()))
 login_button.grid(row=4,column=2)
-reg_button = Button(login_frame,text="Register",bg="white",width=20,height=3,command=register_gui())
+reg_button = Button(login_frame,text="Register",bg="white",width=20,height=3,command=register_gui)
 reg_button.grid(row=6,column=1)
 
 window.mainloop()
