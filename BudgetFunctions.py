@@ -46,5 +46,8 @@ def create_new_user(f_name, password):
     sql = "INSERT INTO tbl_users (f_name, password) VALUES (?, ?)"
     values = (f_name, hash_pass)
     db = DatabaseConnection()
-    return db.execute(sql, values)
+    if db.execute(sql, values):
+        print("User sucessfully created")
+    else:
+        print("Failed to create user")
     

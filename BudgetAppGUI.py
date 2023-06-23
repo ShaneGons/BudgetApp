@@ -18,7 +18,7 @@ class BudgetApp(tk.Tk):
 
         self.frames = {}
 
-        for F in (loginPage, registerPage):
+        for F in (loginPage, registerPage, budgetListPage):
             frame = F(container, self)
   
             # initializing frame of that object from
@@ -40,8 +40,7 @@ class BudgetApp(tk.Tk):
 class loginPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-         
-        # label of frame Layout 2
+        
         name_label = ttk.Label(self, text="Name:", font = LARGE_FONT)
         name_label.grid(row = 0, column = 1, padx = 10, pady = 10)
         
@@ -54,18 +53,16 @@ class loginPage(tk.Frame):
         password_entry = ttk.Entry(self, show = "*")
         password_entry.grid(row = 1, column = 2, padx = 15, pady = 10)
   
-        login_button = ttk.Button(self, text ="Login", command = lambda : controller.show_frame(budgetListPage))
+        login_button = ttk.Button(self, text ="Login", command = lambda : [get_user(name_entry.get(), password_entry.get()), controller.show_frame(budgetListPage)])
         login_button.grid(row = 4, column = 2, padx = 10, pady = 10)
   
-        ## button to show frame 2 with text layout2
         register_button = ttk.Button(self, text ="Register", command = lambda : controller.show_frame(registerPage))
         register_button.grid(row = 4, column = 4, padx = 10, pady = 10)
 
 class registerPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-         
-        # label of frame Layout 2
+        
         name_label = ttk.Label(self, text="Name:", font = LARGE_FONT)
         name_label.grid(row = 0, column = 1, padx = 10, pady = 10)
         
@@ -78,15 +75,69 @@ class registerPage(tk.Frame):
         password_entry = ttk.Entry(self, show = "*")
         password_entry.grid(row = 1, column = 2, padx = 15, pady = 10)
   
-        register_button = ttk.Button(self, text ="Register", command = lambda : controller.show_frame(loginPage))
+        register_button = ttk.Button(self, text ="Register", command = lambda : [create_new_user(), controller.show_frame(loginPage)])
         register_button.grid(row = 4, column = 2, padx = 10, pady = 10)
-  
-        ## button to show frame 2 with text layout2
+
         back_button = ttk.Button(self, text ="Back", command = lambda : controller.show_frame(loginPage))
         back_button.grid(row = 4, column = 4, padx = 10, pady = 10)
 
 class budgetListPage(tk.Frame):
-    pass
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        
+        #Initialise treeview
+        treeview = ttk.Treeview(self)
+        treeview["columns"] = ("name", "budget", "final_week")  # Define the columns
+
+        # Define column headings
+        treeview.heading("#0", text = "Budget ID")
+        treeview.heading("name", text = "Name")
+        treeview.heading("budget", text = "Budget")
+        treeview.heading("final_week", text = "Final Week")
+
+        # Add sample data to the treeview
+        treeview.insert("", "end", text="1", values=("John", "$100","Now"))
+        treeview.insert("", "end", text="2", values=("$200", "kdf", "df"))
+        treeview.insert("", "end", text="3", values=( "$300", "fkdf", "fk"))
+
+        # Configure column widths
+        treeview.column("name", width=100)
+        treeview.column("budget", width=100)
+        treeview.column("final_week", width=100)
+
+        # Pack the Treeview widget
+        treeview.pack(fill="both", expand=True)
+
+        treeview.bind("<<TreeviewSelect>>", self.handle_selection)
+
+        select_button = ttk.Button(self, text = "Select", command = self.run_budget)
+        select_button.pack()
+
+        back_button = ttk.Button(self, text = "Back", command = lambda: [self.back, controller.show_frame(loginPage)])
+        back_button.pack()
+
+    def handle_selection(self, event):
+        selected_item = event.widget.selection()
+        if selected_item:
+            # Get the values of the selected item
+            item_data = event.widget.item(selected_item)
+            self.selected_item = {
+                "text": item_data["text"],
+                "values": item_data["values"]
+            }
+
+    def run_budget(self):
+        if self.selected_item:
+            # Use the selected item's values in your function
+            budget_id = int(self.selected_item["text"])
+            values = self.selected_item["values"]
+            # Perform the desired action with the selected item's text and values
+            print("Selected Item Text:", budget_id)
+            print("Selected Item Values:", values)
+    
+    def back(self):
+        current_user = None
+
 
 class mainMenuPage:
     # global menu_frame 
@@ -150,20 +201,6 @@ class budPage:
         budget_frame.pack()
 
         
-class changeData:
-    def new_week(budget, new_week):
-        if budget.change_week(new_week):
-            pass
-        else:
-            return False
-    
-    def create_user(f_name, password):
-        if create_new_user(f_name, password):
-            print("New User Created")
-
-        else:
-            print("Failure to create new user")     
-
 # def login_gui(name,password):
 #     user_id = get_user(name,password)
 #     if user_id == []:
