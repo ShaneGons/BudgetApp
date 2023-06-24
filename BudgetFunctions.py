@@ -29,7 +29,10 @@ def read_from_database():
     pass
 
 
-def view_budget(budget, currentWeek):
+def get_budget(budget_id, currentWeek):
+    pass
+
+def delete_budget(budget_id):
     pass
 
 def get_user(name,password):
@@ -50,4 +53,7 @@ def create_new_user(f_name, password):
         print("User sucessfully created")
     else:
         print("Failed to create user")
+
+def change_weeks():
+    pass
     
