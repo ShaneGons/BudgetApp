@@ -3,6 +3,7 @@ from datatabase import *
 import hashlib
 
 currentWeek: int
+db = DatabaseConnection()
 
 def hash_password(password):
     # Encode the password as bytes
@@ -28,27 +29,22 @@ def loadProgram(): #loads all the required data needed, such as current week
 def read_from_database():
     pass
 
-
-def get_budget(budget_id, currentWeek):
-    pass
-
-def delete_budget(budget_id):
-    pass
-
+#Gets the user's ID from the database using their login credentials
 def get_user(name,password):
     hash_pass = hash_password(password)
+    password = None
     sql = "SELECT user_id FROM tbl_users WHERE f_name=? AND password=?"
     values = (name, hash_pass)
-    db = DatabaseConnection()
-    user = db.fetch_conditions(sql,values)
-    return user
+    user_id = db.fetch_conditions(sql,values)
+    print(user_id[0][0])
+    return user_id[0][0]
 
+#Adds new user to database
 def create_new_user(f_name, password):
     hash_pass = hash_password(password)
     password = None
     sql = "INSERT INTO tbl_users (f_name, password) VALUES (?, ?)"
     values = (f_name, hash_pass)
-    db = DatabaseConnection()
     if db.execute(sql, values):
         print("User sucessfully created")
     else:
@@ -56,4 +52,5 @@ def create_new_user(f_name, password):
 
 def change_weeks():
     pass
+
     
