@@ -1,22 +1,30 @@
 from datatabase import DatabaseConnection
 
 class Budget:
-
     
-    def __init__(self, budget_id, budget, final_week):
-        self.budget_id = budget_id
-        self.budget = budget
-        self.final_week = final_week
+    def __init__(self):
+        self.budget_id = -1
+        self.budget = -1
+        self.num_weeks = -1
 
     def add_income(self, income): #will add user's income to their total budget
-        pass
+        self.budget += income
 
     def enter_expenses(self, expenses): #will take user to screen to input their spending
-        pass
+        self.budget -= expenses
 
-    def change_final_week(self, new_week): #will allow user to change how long their budget needs to last
-        if new_week < 1:
+    def change_final_week(self, new_num_weeks): #will allow user to change how long their budget needs to last
+        if new_num_weeks < 1:
             return False
         db = DatabaseConnection()
-        return db.execute("UPDATE Budgets SET final_week=? WHERE budgetID=?", (new_week, self.budget_id))
+        return db.execute("UPDATE Budgets SET num_weeks=? WHERE budgetID=?", (new_num_weeks, self.budget_id))
+    
+    def set_budget_id(self, budget_id):
+        self.budget_id = budget_id
+
+    def set_budget(self, budget):
+        self.budget = budget
+
+    def set_num_weeks(self, num_weeks):
+        self.num_weeks = num_weeks
         
