@@ -1,11 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 from BudgetFunctions import *
-import User
-import Budget
+from User import *
+from Budget import *
 
 # window = Tk()
-LARGE_FONT = ("Verdana", 35)
+MEDIUM_FONT = ("Verdana", 20)
+current_user = User()
 
 class BudgetApp(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -42,38 +43,44 @@ class loginPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         
-        name_label = ttk.Label(self, text= "Name:", font = LARGE_FONT)
+        name_label = ttk.Label(self, text= "Name:", font = MEDIUM_FONT)
         name_label.grid(row = 0, column = 1, padx = 10, pady = 10)
         
         name_entry = ttk.Entry(self, text = "Name")
         name_entry.grid(row = 0, column = 2, padx = 15, pady = 10)
 
-        password_label = ttk.Label(self, text = "Password:", font = LARGE_FONT)
+        password_label = ttk.Label(self, text = "Password:", font = MEDIUM_FONT)
         password_label.grid(row = 1, column = 1, padx = 10, pady = 10)
 
         password_entry = ttk.Entry(self, show = "*")
         password_entry.grid(row = 1, column = 2, padx = 15, pady = 10)
   
-        login_button = ttk.Button(self, text = "Login", command = lambda : [get_user(name_entry.get(), password_entry.get()), clear_entry(name_entry), clear_entry(password_entry), controller.show_frame(budgetListPage)])
+        login_button = ttk.Button(self, text = "Login", command = lambda : [login(name_entry.get(), password_entry.get()), clear_entry(name_entry), clear_entry(password_entry), budgetListPage.load(), controller.show_frame(budgetListPage)])
         login_button.grid(row = 4, column = 2, padx = 10, pady = 10)
   
         register_button = ttk.Button(self, text = "Register", command = lambda : controller.show_frame(registerPage))
         register_button.grid(row = 4, column = 4, padx = 10, pady = 10)
-    
 
+def login(name, password):
+    user_id = get_user(name, password)
+    password = None
+    if user_id != None:
+        print(user_id)
+        current_user.set_user_id(user_id)
+        print(current_user.user_id)
 
 
 class registerPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         
-        name_label = ttk.Label(self, text= "Name:", font = LARGE_FONT)
+        name_label = ttk.Label(self, text= "Name:", font = MEDIUM_FONT)
         name_label.grid(row = 0, column = 1, padx = 10, pady = 10)
         
         name_entry = ttk.Entry(self, text = "Name")
         name_entry.grid(row = 0, column = 2, padx = 15, pady = 10)
 
-        password_label = ttk.Label(self, text = "Password:", font = LARGE_FONT)
+        password_label = ttk.Label(self, text = "Password:", font = MEDIUM_FONT)
         password_label.grid(row = 1, column = 1, padx = 10, pady = 10)
 
         password_entry = ttk.Entry(self, show = "*")
@@ -87,27 +94,26 @@ class registerPage(tk.Frame):
 
 class budgetListPage(tk.Frame):
     def __init__(self, parent, controller):
+        budget_list = current_user.get_budgets()
         tk.Frame.__init__(self, parent)
         
         #Initialise treeview
+        global treeview
         treeview = ttk.Treeview(self)
-        treeview["columns"] = ("name", "budget", "final_week")  # Define the columns
+        treeview["columns"] = ("name", "budget", "num_weeks")  # Define the columns
 
         # Define column headings
         treeview.heading("#0", text = "Budget ID")
         treeview.heading("name", text = "Name")
         treeview.heading("budget", text = "Budget")
-        treeview.heading("final_week", text = "Final Week")
+        treeview.heading("num_weeks", text = "Remaining Weeks")
 
         # Add sample data to the treeview
-        treeview.insert("", "end", text="1", values=("John", "$100","Now"))
-        treeview.insert("", "end", text="2", values=("$200", "kdf", "df"))
-        treeview.insert("", "end", text="3", values=( "$300", "fkdf", "fk"))
 
         # Configure column widths
         treeview.column("name", width=100)
         treeview.column("budget", width=100)
-        treeview.column("final_week", width=100)
+        treeview.column("num_weeks", width=100)
 
         # Pack the Treeview widget
         treeview.pack(fill="both", expand=True)
@@ -117,8 +123,16 @@ class budgetListPage(tk.Frame):
         select_button = ttk.Button(self, text = "Select", command = lambda : [self.run_budget, controller.show_frame(mainMenuPage)])
         select_button.pack()
 
+        create_budget_button = ttk.Button(self, text = "Create New Budget", command = lambda : controller.show_frame(mainMenuPage))
+        create_budget_button.pack()
+
         back_button = ttk.Button(self, text = "Back", command = lambda: [self.back, controller.show_frame(loginPage)])
         back_button.pack()
+    
+    def load():
+        budget_list = current_user.get_budgets()
+        for i in range(len(budget_list)):
+            treeview.insert("", "end", text=str(budget_list[i][0]), values=(budget_list[i][1],budget_list[i][2]))
 
     def handle_selection(self, event):
         selected_item = event.widget.selection()
@@ -126,34 +140,34 @@ class budgetListPage(tk.Frame):
             # Get the values of the selected item
             item_data = event.widget.item(selected_item)
             self.selected_item = {
-                "text": item_data["text"],
+                "budget_id": item_data["text"],
                 "values": item_data["values"]
             }
 
     def run_budget(self):
         if self.selected_item:
             # Use the selected item's values in your function
-            budget_id = int(self.selected_item["text"])
+            budget_id = int(self.selected_item["budget_id"])
             values = self.selected_item["values"]
             # Perform the desired action with the selected item's text and values
-            # budget = Budget(budget_id, values[1], values[2])
+            budget = Budget(budget_id, values[1], values[2])
 
     
     def back(self):
-        current_user = None
+        current_user.set_user_id(-1)
 
 
 class mainMenuPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         
-        week_label = ttk.Label(self, text= "Weeks Remaining:", font = LARGE_FONT)
+        week_label = ttk.Label(self, text= "Weeks Remaining:", font = MEDIUM_FONT)
         week_label.grid(row = 0, column = 1, padx = 10, pady = 10)
 
-        weekly_budget_label = ttk.Label(self, text = "Remaining Weekly Budget:", font = LARGE_FONT)
+        weekly_budget_label = ttk.Label(self, text = "Remaining Weekly Budget:", font = MEDIUM_FONT)
         weekly_budget_label.grid(row = 1, column = 1, padx = 10, pady = 10)
 
-        total_budget_label = ttk.Label(self, text = "Remaining Budget:", font = LARGE_FONT)
+        total_budget_label = ttk.Label(self, text = "Remaining Budget:", font = MEDIUM_FONT)
         total_budget_label.grid(row = 1, column = 2, padx = 15, pady = 10)
   
         add_income_button = ttk.Button(self, text = "Add Income", command = lambda : [create_new_user, controller.show_frame(incomePage)])
@@ -163,7 +177,7 @@ class mainMenuPage(tk.Frame):
         add_expenses_button.grid(row = 4, column  = 3, padx = 10, pady = 10)
 
         change_weeks_button = ttk.Button(self, text = "Change No. of Remaing Weeks", command = lambda : controller.show_frame(changeWeeksPage))
-        change_weeks_button.grid(row = 4, column  = 3, padx = 10, pady = 10)
+        change_weeks_button.grid(row = 4, column  = 4, padx = 10, pady = 10)
 
         delete_button = ttk.Button(self, text = "Delete", command = lambda : [delete_budget, controller.show_frame(budgetListPage)])
         delete_button.grid(row = 4, column  = 3, padx = 10, pady = 10)
@@ -176,7 +190,7 @@ class incomePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         
-        add_income_label = ttk.Label(self, text= "Add Income:", font = LARGE_FONT)
+        add_income_label = ttk.Label(self, text= "Add Income:", font = MEDIUM_FONT)
         add_income_label.grid(row = 0, column = 1, padx = 10, pady = 10)
         
         income_entry = ttk.Entry(self, text = "Income")
@@ -193,7 +207,7 @@ class expensePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         
-        expense_label = ttk.Label(self, text= "Add Expenses:", font = LARGE_FONT)
+        expense_label = ttk.Label(self, text= "Add Expenses:", font = MEDIUM_FONT)
         expense_label.grid(row = 0, column = 1, padx = 10, pady = 10)
         
         expense_entry = ttk.Entry(self, text = "Expenses")
@@ -210,10 +224,10 @@ class changeWeeksPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         
-        week_label = ttk.Label(self, text= "Current No. of Weeks Remaining:", font = LARGE_FONT)
+        week_label = ttk.Label(self, text= "Current No. of Weeks Remaining:", font = MEDIUM_FONT)
         week_label.grid(row = 0, column = 1, padx = 10, pady = 10)
         
-        new_week_label = ttk.Label(self, text = "Enter New No. of Remaining Weeks:", font = LARGE_FONT)
+        new_week_label = ttk.Label(self, text = "Enter New No. of Remaining Weeks:", font = MEDIUM_FONT)
         new_week_label.grid(row = 1, column = 1, padx = 10, pady = 10)
 
         new_week_entry = ttk.Entry(self, text = "")
@@ -228,8 +242,11 @@ class changeWeeksPage(tk.Frame):
 def clear_entry(entry_box):
     entry_box.delete(0, "end")
 
-current_user = None
-budget = None
 
+
+createDatabase()
+
+db = DatabaseConnection()
 app = BudgetApp()
+user_budget = Budget()
 app.mainloop()
