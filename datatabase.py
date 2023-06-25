@@ -2,21 +2,27 @@ import sqlite3
 
 def createDatabase():
         try:
-            conn = sqlite3.connect('budget.db')
+            conn = sqlite3.connect('budget.db') 
             c = conn.cursor()
 
+            #user_id - unique identifier for each user
+            #name - name of user
+            #password - hashed password
             c.execute("""CREATE TABLE IF NOT EXISTS tbl_users (
                             user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            f_name TEXT NOT NULL,
+                            name TEXT NOT NULL,
                             password TEXT NOT NULL
                         );""")
             
-            #final_week is the data the user wants the budget to last till
+            #budget_id - unique identifier for each budget
+            #user_id - foreign key that associates a budget with a user
+            #budget - the remaining budget
+            #num_weeks - the remaining no. of weeks the budget needs to last for
             c.execute("""CREATE TABLE IF NOT EXISTS tbl_budgets (
                             budget_id INTEGER PRIMARY KEY AUTOINCREMENT,
                             user_id INTEGER NOT NULL,
                             budget REAL NOT NULL,
-                            final_week TEXT NOT NULL,
+                            num_weeks INTEGER NOT NULL,
                             FOREIGN KEY (user_id) REFERENCES tbl_users (user_id)
                         );""")
             c.close()
