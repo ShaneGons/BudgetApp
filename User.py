@@ -29,8 +29,11 @@ class User:
     def add_budget(self, budget_name, budget, num_weeks):
         budget_name = str(budget_name)
         budget_name = budget_name.replace(" ", "")
+        budget = float(budget)
+        budget = round(budget, 2)
+
         sql = "INSERT INTO tbl_budgets (user_id, budget_name, budget, num_weeks) VALUES (?, ?, ?, ?)"
-        values = (self.user_id, budget_name, float(budget), int(num_weeks))
+        values = (self.user_id, budget_name, budget, int(num_weeks))
         if db.execute(sql, values):
             print("Budget created")
             return True

@@ -132,7 +132,8 @@ class budgetListPage(tk.Frame):
     def load():
         budget_list = current_user.get_budgets()
         for i in range(len(budget_list)):
-            budget_table.insert("", "end", text=str(budget_list[i][0]), values=(budget_list[i][1],budget_list[i][2],budget_list[i][3]))
+            budget_str = "{:.2f}".format(budget_list[i][2])
+            budget_table.insert("", "end", text=str(budget_list[i][0]), values=(budget_list[i][1],budget_str,budget_list[i][3]))
         
     def clear_table():
         for budget in budget_table.get_children():
