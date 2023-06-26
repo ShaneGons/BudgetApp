@@ -27,4 +27,11 @@ class Budget:
 
     def set_num_weeks(self, num_weeks):
         self.num_weeks = num_weeks
+    
+    def get_budget(self):
+        return "{:.2f}".format(self.budget)
+    
+    def get_weekly_budget(self):
+        week_budget = self.budget/self.num_weeks
+        return "{:.2f}".format(week_budget)
         
