@@ -65,9 +65,7 @@ def login(name, password):
     user_id = get_user(name, password)
     password = None
     if user_id != None:
-        print(user_id)
         current_user.set_user_id(user_id)
-        print(current_user.user_id)
 
 
 class registerPage(tk.Frame):
