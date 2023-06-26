@@ -7,6 +7,7 @@ from Budget import *
 # window = Tk()
 MEDIUM_FONT = ("Verdana", 15)
 current_user = User()
+current_budget = Budget()
 
 class BudgetApp(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -120,7 +121,7 @@ class budgetListPage(tk.Frame):
 
         budget_table.bind("<<TreeviewSelect>>", self.handle_selection)
 
-        select_button = ttk.Button(self, text = "Select", command = lambda : [self.run_budget, controller.show_frame(mainMenuPage)])
+        select_button = ttk.Button(self, text = "Select", command = lambda : [self.run_budget(), controller.show_frame(mainMenuPage)])
         select_button.pack()
 
         create_budget_button = ttk.Button(self, text = "Create New Budget", command = lambda : controller.show_frame(createBudgetPage))
@@ -155,8 +156,9 @@ class budgetListPage(tk.Frame):
             budget_id = int(self.selected_item["budget_id"])
             values = self.selected_item["values"]
             # Perform the desired action with the selected item's text and values
-            budget = Budget(budget_id, values[1], values[2])
-
+            current_budget.set_budget_id(budget_id)
+            current_budget.set_budget(float(values[1]))
+            current_budget.set_num_weeks(int(values[2]))
     
     def back(self):
         current_user.set_user_id(-1)
@@ -201,25 +203,29 @@ class mainMenuPage(tk.Frame):
         week_label.grid(row = 0, column = 1, padx = 10, pady = 10)
 
         weekly_budget_label = ttk.Label(self, text = "Remaining Weekly Budget:", font = MEDIUM_FONT)
-        weekly_budget_label.grid(row = 1, column = 1, padx = 10, pady = 10)
+        weekly_budget_label.grid(row = 1, column = 1, padx = 10, pady = 15)
 
         total_budget_label = ttk.Label(self, text = "Remaining Budget:", font = MEDIUM_FONT)
-        total_budget_label.grid(row = 1, column = 2, padx = 15, pady = 10)
+        total_budget_label.grid(row = 2, column = 1, padx = 15, pady = 15)
   
         add_income_button = ttk.Button(self, text = "Add Income", command = lambda : [create_new_user, controller.show_frame(incomePage)])
-        add_income_button.grid(row = 4, column = 2, padx = 10, pady = 10)
+        add_income_button.grid(row = 3, column = 1, padx = 10, pady = 10)
 
         add_expenses_button = ttk.Button(self, text = "Add Expenses", command = lambda : controller.show_frame(expensePage))
-        add_expenses_button.grid(row = 4, column  = 3, padx = 10, pady = 10)
+        add_expenses_button.grid(row = 3, column  = 2, padx = 10, pady = 10)
 
         change_weeks_button = ttk.Button(self, text = "Change No. of Remaing Weeks", command = lambda : controller.show_frame(changeWeeksPage))
-        change_weeks_button.grid(row = 4, column  = 4, padx = 10, pady = 10)
+        change_weeks_button.grid(row = 3, column  = 3, padx = 10, pady = 10)
 
-        delete_button = ttk.Button(self, text = "Delete", command = lambda : [delete_budget, controller.show_frame(budgetListPage)])
+        delete_button = ttk.Button(self, text = "Delete", command = lambda : [current_user.delete_budget(current_budget.budget_id), self.reset_current_budget(),
+                                                                              budgetListPage.clear_table(), budgetListPage.load(), controller.show_frame(budgetListPage)])
         delete_button.grid(row = 4, column  = 3, padx = 10, pady = 10)
 
-        back_button = ttk.Button(self, text = "Back", command = lambda : controller.show_frame(budgetListPage))
+        back_button = ttk.Button(self, text = "Back", command = lambda : [self.reset_current_budget(), controller.show_frame(budgetListPage)])
         back_button.grid(row = 4, column = 4, padx = 10, pady = 10)
+    
+    def reset_current_budget(self):
+        current_budget = Budget()
 
 
 class incomePage(tk.Frame):
@@ -284,5 +290,4 @@ createDatabase()
 
 db = DatabaseConnection()
 app = BudgetApp()
-user_budget = Budget()
 app.mainloop()

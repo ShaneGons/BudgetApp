@@ -24,7 +24,15 @@ class User:
         self.user_id = user_id
 
     def delete_budget(self, budget_id):
-        pass
+        sql = "DELETE FROM tbl_budgets WHERE budget_id=?"
+        print(budget_id)
+        values = (budget_id,)
+        if db.execute(sql, values):
+            print("Budget deleted")
+            return True
+        else:
+            print("Failed to delete budget")
+            return False
 
     def add_budget(self, budget_name, budget, num_weeks):
         budget_name = str(budget_name)
