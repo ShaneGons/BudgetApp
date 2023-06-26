@@ -55,7 +55,8 @@ class loginPage(tk.Frame):
         password_entry = ttk.Entry(self, show = "*")
         password_entry.grid(row = 1, column = 2, padx = 15, pady = 10)
   
-        login_button = ttk.Button(self, text = "Login", command = lambda : [login(name_entry.get(), password_entry.get()), clear_entry(name_entry), clear_entry(password_entry), budgetListPage.load(), controller.show_frame(budgetListPage)])
+        login_button = ttk.Button(self, text = "Login", command = lambda : [login(name_entry.get(), password_entry.get()), clear_entry(name_entry), clear_entry(password_entry), 
+                                                                            budgetListPage.clear_table(), budgetListPage.load(), controller.show_frame(budgetListPage)])
         login_button.grid(row = 4, column = 2, padx = 10, pady = 10)
   
         register_button = ttk.Button(self, text = "Register", command = lambda : [clear_entry(name_entry), clear_entry(password_entry), controller.show_frame(registerPage)])
@@ -96,28 +97,28 @@ class budgetListPage(tk.Frame):
         budget_list = current_user.get_budgets()
         tk.Frame.__init__(self, parent)
         
-        #Initialise treeview
-        global treeview
-        treeview = ttk.Treeview(self)
-        treeview["columns"] = ("name", "budget", "num_weeks")  # Define the columns
+        #Initialise treeview table
+        global budget_table
+        budget_table = ttk.Treeview(self)
+        budget_table["columns"] = ("name", "budget", "num_weeks")  # Define the columns
 
         # Define column headings
-        treeview.heading("#0", text = "Budget ID")
-        treeview.heading("name", text = "Name")
-        treeview.heading("budget", text = "Budget")
-        treeview.heading("num_weeks", text = "Remaining Weeks")
+        budget_table.heading("#0", text = "Budget ID")
+        budget_table.heading("name", text = "Name")
+        budget_table.heading("budget", text = "Budget")
+        budget_table.heading("num_weeks", text = "Remaining Weeks")
 
-        # Add sample data to the treeview
+        # Add sample data to the budget_table
 
         # Configure column widths
-        treeview.column("name", width=100)
-        treeview.column("budget", width=100)
-        treeview.column("num_weeks", width=100)
+        budget_table.column("name", width=100)
+        budget_table.column("budget", width=100)
+        budget_table.column("num_weeks", width=100)
 
         # Pack the Treeview widget
-        treeview.pack(fill="both", expand=True)
+        budget_table.pack(fill="both", expand=True)
 
-        treeview.bind("<<TreeviewSelect>>", self.handle_selection)
+        budget_table.bind("<<TreeviewSelect>>", self.handle_selection)
 
         select_button = ttk.Button(self, text = "Select", command = lambda : [self.run_budget, controller.show_frame(mainMenuPage)])
         select_button.pack()
@@ -131,7 +132,11 @@ class budgetListPage(tk.Frame):
     def load():
         budget_list = current_user.get_budgets()
         for i in range(len(budget_list)):
-            treeview.insert("", "end", text=str(budget_list[i][0]), values=(budget_list[i][1],budget_list[i][2],budget_list[i][3]))
+            budget_table.insert("", "end", text=str(budget_list[i][0]), values=(budget_list[i][1],budget_list[i][2],budget_list[i][3]))
+        
+    def clear_table():
+        for budget in budget_table.get_children():
+            budget_table.delete(budget)
 
     def handle_selection(self, event):
         selected_item = event.widget.selection()
@@ -178,9 +183,9 @@ class createBudgetPage(tk.Frame):
         num_weeks_entry = ttk.Entry(self, text = "Weeks")
         num_weeks_entry.grid(row = 2, column = 2, padx = 15, pady = 10)
   
-        create_button = ttk.Button(self, text = "Create", command = lambda : [current_user.add_budget(name_entry.get(),budget_entry.get(),
-                                                                                num_weeks_entry.get()), clear_entry(name_entry), clear_entry(budget_entry), 
-                                                                                clear_entry(num_weeks_entry), budgetListPage.load(), controller.show_frame(budgetListPage)])
+        create_button = ttk.Button(self, text = "Create", command = lambda : [current_user.add_budget(name_entry.get(),budget_entry.get(), num_weeks_entry.get()), 
+                                                                              clear_entry(name_entry), clear_entry(budget_entry), clear_entry(num_weeks_entry), 
+                                                                              budgetListPage.clear_table(), budgetListPage.load(), controller.show_frame(budgetListPage)])
         create_button.grid(row = 4, column = 2, padx = 10, pady = 10)
 
         back_button = ttk.Button(self, text = "Back", command = lambda : controller.show_frame(budgetListPage))
