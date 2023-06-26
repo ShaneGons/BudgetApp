@@ -1,22 +1,38 @@
 from datatabase import DatabaseConnection
 
 class User:
+    global db
+    db = DatabaseConnection()
     def __init__(self):
         self.user_id = -1
 
-    def change_name(self):
+    def change_name(self, name):
         pass
 
-    def change_password(self):
+    def change_password(self, hash_pass):
         pass
 
     def get_budgets(self):
-        db = DatabaseConnection()
-        budgets = db.fetch("SELECT budget_id,budget,num_weeks FROM tbl_budgets WHERE user_id=?", (self.user_id))
+        sql = "SELECT budget_id,budget,num_weeks FROM tbl_budgets WHERE user_id=?"
+        values = (self.user_id)
+        budgets = db.fetch_conditions(sql, values)
+        if budgets == None:
+            return []
         return budgets
     
     def set_user_id(self, user_id):
         self.user_id = user_id
 
-    def get_budgets(self):
-        return []
+    def delete_budget(self, budget_id):
+        pass
+
+    def add_budget(self, budget_name, budget, num_weeks):
+        budget_name.replace(" ","")
+        sql = "INSERT INTO tbl_budgets (user_id, budget_name, budget, num_weeks) VALUES (?, ?, ?, ?)"
+        values = (self.user_id, budget, num_weeks)
+        if db.execute(sql, values):
+            print("Budget created")
+            return True
+        else:
+            print("Error creating budget")
+            return False

@@ -21,6 +21,7 @@ def createDatabase():
             c.execute("""CREATE TABLE IF NOT EXISTS tbl_budgets (
                             budget_id INTEGER PRIMARY KEY AUTOINCREMENT,
                             user_id INTEGER NOT NULL,
+                            budget_name TEXT NOT NULL,
                             budget REAL NOT NULL,
                             num_weeks INTEGER NOT NULL,
                             FOREIGN KEY (user_id) REFERENCES tbl_users (user_id)

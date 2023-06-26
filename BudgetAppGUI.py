@@ -58,7 +58,7 @@ class loginPage(tk.Frame):
         login_button = ttk.Button(self, text = "Login", command = lambda : [login(name_entry.get(), password_entry.get()), clear_entry(name_entry), clear_entry(password_entry), budgetListPage.load(), controller.show_frame(budgetListPage)])
         login_button.grid(row = 4, column = 2, padx = 10, pady = 10)
   
-        register_button = ttk.Button(self, text = "Register", command = lambda : controller.show_frame(registerPage))
+        register_button = ttk.Button(self, text = "Register", command = lambda : [clear_entry(name_entry), clear_entry(password_entry), controller.show_frame(registerPage)])
         register_button.grid(row = 4, column = 4, padx = 10, pady = 10)
 
 def login(name, password):
@@ -86,7 +86,8 @@ class registerPage(tk.Frame):
         password_entry = ttk.Entry(self, show = "*")
         password_entry.grid(row = 1, column = 2, padx = 15, pady = 10)
   
-        register_button = ttk.Button(self, text = "Register", command = lambda : [create_new_user, clear_entry(name_entry), clear_entry(password_entry), controller.show_frame(loginPage)])
+        register_button = ttk.Button(self, text = "Register", command = lambda : [create_new_user(name_entry.get(),password_entry.get()), 
+                                                                                  clear_entry(name_entry), clear_entry(password_entry), controller.show_frame(loginPage)])
         register_button.grid(row = 4, column = 2, padx = 10, pady = 10)
 
         back_button = ttk.Button(self, text = "Back", command = lambda : controller.show_frame(loginPage))
@@ -155,6 +156,37 @@ class budgetListPage(tk.Frame):
     
     def back(self):
         current_user.set_user_id(-1)
+
+
+class createBudgetPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        
+        name_label = ttk.Label(self, text= "Budget Name:", font = MEDIUM_FONT)
+        name_label.grid(row = 0, column = 1, padx = 10, pady = 10)
+        
+        name_entry = ttk.Entry(self, text = "Name")
+        name_entry.grid(row = 0, column = 2, padx = 15, pady = 10)
+
+        budget_label = ttk.Label(self, text = "Budget:", font = MEDIUM_FONT)
+        budget_label.grid(row = 1, column = 1, padx = 10, pady = 10)
+
+        budget_entry = ttk.Entry(self, text = "Budget")
+        budget_entry.grid(row = 1, column = 2, padx = 15, pady = 10)
+
+        num_weeks_label = ttk.Label(self, text = "No. of Weeks:", font = MEDIUM_FONT)
+        num_weeks_label.grid(row = 2, column = 1, padx = 10, pady = 10)
+
+        num_weeks_entry = ttk.Entry(self, text = "Weeks")
+        num_weeks_entry.grid(row = 2, column = 2, padx = 15, pady = 10)
+  
+        create_button = ttk.Button(self, text = "Create", command = lambda : [current_user.add_budget(name_entry.get(),budget_entry.get(),
+                                                                                num_weeks_entry.get()), clear_entry(name_entry), clear_entry(budget_entry), 
+                                                                                clear_entry(num_weeks_entry), controller.show_frame(budgetListPage)])
+        create_button.grid(row = 4, column = 2, padx = 10, pady = 10)
+
+        back_button = ttk.Button(self, text = "Back", command = lambda : controller.show_frame(budgetListPage))
+        back_button.grid(row = 4, column = 4, padx = 10, pady = 10)
 
 
 class mainMenuPage(tk.Frame):

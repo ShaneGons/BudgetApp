@@ -33,22 +33,25 @@ def read_from_database():
 def get_user(name,password):
     hash_pass = hash_password(password)
     password = None
-    sql = "SELECT user_id FROM tbl_users WHERE f_name=? AND password=?"
+    sql = "SELECT user_id FROM tbl_users WHERE name=? AND password=?"
     values = (name, hash_pass)
     user_id = db.fetch_conditions(sql,values)
-    print(user_id[0][0])
-    return user_id[0][0]
+    if user_id != None:
+        return user_id[0][0]
+    else: return None
 
 #Adds new user to database
-def create_new_user(f_name, password):
+def create_new_user(name, password):
+    print("H")
     hash_pass = hash_password(password)
     password = None
-    sql = "INSERT INTO tbl_users (f_name, password) VALUES (?, ?)"
-    values = (f_name, hash_pass)
+    sql = "INSERT INTO tbl_users (name, password) VALUES (?, ?)"
+    values = (name, hash_pass)
     if db.execute(sql, values):
         print("User sucessfully created")
     else:
         print("Failed to create user")
+    print("j")
 
 def change_weeks():
     pass
