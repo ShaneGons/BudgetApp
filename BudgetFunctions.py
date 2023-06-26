@@ -42,7 +42,6 @@ def get_user(name,password):
 
 #Adds new user to database
 def create_new_user(name, password):
-    print("H")
     hash_pass = hash_password(password)
     password = None
     sql = "INSERT INTO tbl_users (name, password) VALUES (?, ?)"
@@ -51,7 +50,6 @@ def create_new_user(name, password):
         print("User sucessfully created")
     else:
         print("Failed to create user")
-    print("j")
 
 def change_weeks():
     pass

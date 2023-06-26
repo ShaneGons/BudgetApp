@@ -13,8 +13,8 @@ class User:
         pass
 
     def get_budgets(self):
-        sql = "SELECT budget_id,budget,num_weeks FROM tbl_budgets WHERE user_id=?"
-        values = (self.user_id)
+        sql = "SELECT budget_id,budget_name,budget,num_weeks FROM tbl_budgets WHERE user_id=?"
+        values = (self.user_id,)
         budgets = db.fetch_conditions(sql, values)
         if budgets == None:
             return []
@@ -27,9 +27,11 @@ class User:
         pass
 
     def add_budget(self, budget_name, budget, num_weeks):
+        budget_name = str(budget_name)
         budget_name.replace(" ","")
         sql = "INSERT INTO tbl_budgets (user_id, budget_name, budget, num_weeks) VALUES (?, ?, ?, ?)"
-        values = (self.user_id, budget, num_weeks)
+        values = (self.user_id, budget_name, float(budget), int(num_weeks))
+        print(values)
         if db.execute(sql, values):
             print("Budget created")
             return True

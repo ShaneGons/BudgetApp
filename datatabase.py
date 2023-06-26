@@ -45,8 +45,8 @@ class DatabaseConnection:
             c.close()
 
             return request
-        except:
-            print("Error fetching data")
+        except Exception as e:
+            print(e)
             return None
         
     def fetch_conditions(self,sql, values):
@@ -59,8 +59,8 @@ class DatabaseConnection:
             c.close()
 
             return request
-        except:
-            print("Error fetching data")
+        except Exception as e:
+            print(e)
             return None
     
     def execute(self,sql,values):
@@ -73,6 +73,6 @@ class DatabaseConnection:
             c.close()
             
             return True
-        except:
-            print("Error updating database")
+        except Exception as e:
+            print(e)
             return False

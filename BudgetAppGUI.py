@@ -5,7 +5,7 @@ from User import *
 from Budget import *
 
 # window = Tk()
-MEDIUM_FONT = ("Verdana", 20)
+MEDIUM_FONT = ("Verdana", 15)
 current_user = User()
 
 class BudgetApp(tk.Tk):
@@ -20,7 +20,7 @@ class BudgetApp(tk.Tk):
 
         self.frames = {}
 
-        for F in (loginPage, registerPage, budgetListPage, mainMenuPage, incomePage, expensePage, changeWeeksPage):
+        for F in (loginPage, registerPage, budgetListPage, createBudgetPage, mainMenuPage, incomePage, expensePage, changeWeeksPage):
             frame = F(container, self)
   
             # initializing frame of that object from
@@ -124,7 +124,7 @@ class budgetListPage(tk.Frame):
         select_button = ttk.Button(self, text = "Select", command = lambda : [self.run_budget, controller.show_frame(mainMenuPage)])
         select_button.pack()
 
-        create_budget_button = ttk.Button(self, text = "Create New Budget", command = lambda : controller.show_frame(mainMenuPage))
+        create_budget_button = ttk.Button(self, text = "Create New Budget", command = lambda : controller.show_frame(createBudgetPage))
         create_budget_button.pack()
 
         back_button = ttk.Button(self, text = "Back", command = lambda: [self.back, controller.show_frame(loginPage)])
@@ -182,7 +182,7 @@ class createBudgetPage(tk.Frame):
   
         create_button = ttk.Button(self, text = "Create", command = lambda : [current_user.add_budget(name_entry.get(),budget_entry.get(),
                                                                                 num_weeks_entry.get()), clear_entry(name_entry), clear_entry(budget_entry), 
-                                                                                clear_entry(num_weeks_entry), controller.show_frame(budgetListPage)])
+                                                                                clear_entry(num_weeks_entry), budgetListPage.load(), controller.show_frame(budgetListPage)])
         create_button.grid(row = 4, column = 2, padx = 10, pady = 10)
 
         back_button = ttk.Button(self, text = "Back", command = lambda : controller.show_frame(budgetListPage))
