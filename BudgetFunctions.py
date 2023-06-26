@@ -36,9 +36,10 @@ def get_user(name,password):
     sql = "SELECT user_id FROM tbl_users WHERE name=? AND password=?"
     values = (name, hash_pass)
     user_id = db.fetch_conditions(sql,values)
-    if user_id != None:
+    try:
         return user_id[0][0]
-    else: return None
+    except:
+        raise Exception("Invalid login credentials")
 
 #Adds new user to database
 def create_new_user(name, password):
