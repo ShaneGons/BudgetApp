@@ -3,6 +3,8 @@ from tkinter import ttk
 from BudgetFunctions import *
 from User import *
 from Budget import *
+from tkcalendar import Calendar
+from datetime import date
 
 # window = Tk()
 MEDIUM_FONT = ("Verdana", 15)
@@ -21,7 +23,7 @@ class BudgetApp(tk.Tk):
 
         self.frames = {}
 
-        for F in (loginPage, registerPage, budgetListPage, createBudgetPage, mainMenuPage, incomePage, expensePage, changeWeeksPage):
+        for F in (loginPage, registerPage, budgetListPage, createBudgetPage, mainMenuPage, incomePage, expensePage, changeWeeksPage, changeBudgetWeeks):
             frame = F(container, self)
   
             # initializing frame of that object from
@@ -56,8 +58,8 @@ class loginPage(tk.Frame):
         password_entry = ttk.Entry(self, show = "*")
         password_entry.grid(row = 1, column = 2, padx = 15, pady = 10)
   
-        login_button = ttk.Button(self, text = "Login", command = lambda : [login(name_entry.get(), password_entry.get()), clear_entry(name_entry), clear_entry(password_entry), 
-                                                                            budgetListPage.clear_table(), budgetListPage.load(), controller.show_frame(budgetListPage)])
+        login_button = ttk.Button(self, text = "Login", command = lambda : [login(name_entry.get(), password_entry.get()), clear_entry(name_entry), 
+                                                                            clear_entry(password_entry), budgetListPage.load(), controller.show_frame(budgetListPage)])
         login_button.grid(row = 4, column = 2, padx = 10, pady = 10)
   
         register_button = ttk.Button(self, text = "Register", command = lambda : [clear_entry(name_entry), clear_entry(password_entry), controller.show_frame(registerPage)])
@@ -132,14 +134,17 @@ class budgetListPage(tk.Frame):
         back_button.pack()
     
     def load():
+        def clear_table():
+            for budget in budget_table.get_children():
+                budget_table.delete(budget)
+                
+        clear_table()
         budget_list = current_user.get_budgets()
         for i in range(len(budget_list)):
             budget_str = "{:.2f}".format(budget_list[i][2])
             budget_table.insert("", "end", text=str(budget_list[i][0]), values=(budget_list[i][1],budget_str,budget_list[i][3]))
         
-    def clear_table():
-        for budget in budget_table.get_children():
-            budget_table.delete(budget)
+        
 
     def handle_selection(self, event):
         selected_item = event.widget.selection()
@@ -219,14 +224,14 @@ class mainMenuPage(tk.Frame):
         add_expenses_button = ttk.Button(self, text = "Add Expenses", command = lambda : controller.show_frame(expensePage))
         add_expenses_button.grid(row = 3, column  = 1, padx = 10, pady = 10)
 
-        change_weeks_button = ttk.Button(self, text = "Change No. of Remaing Weeks", command = lambda : controller.show_frame(changeWeeksPage))
+        change_weeks_button = ttk.Button(self, text = "Change No. of Remaing Weeks", command = lambda : controller.show_frame(changeBudgetWeeks))
         change_weeks_button.grid(row = 3, column  = 2, padx = 10, pady = 10)
 
         delete_button = ttk.Button(self, text = "Delete", command = lambda : [current_user.delete_budget(current_budget.budget_id), self.reset_current_budget(),
-                                                                              budgetListPage.clear_table(), budgetListPage.load(), controller.show_frame(budgetListPage)])
+                                                                              budgetListPage.load(), controller.show_frame(budgetListPage)])
         delete_button.grid(row = 4, column  = 1, padx = 10, pady = 10)
 
-        back_button = ttk.Button(self, text = "Back", command = lambda : [self.reset_current_budget(), controller.show_frame(budgetListPage)])
+        back_button = ttk.Button(self, text = "Back", command = lambda : [self.reset_current_budget(), budgetListPage.load(), controller.show_frame(budgetListPage)])
         back_button.grid(row = 4, column = 2, padx = 10, pady = 10)
     
     def reset_current_budget(self):
@@ -264,7 +269,7 @@ class expensePage(tk.Frame):
         expense_entry = ttk.Entry(self, text = "Expenses")
         expense_entry.grid(row = 0, column = 2, padx = 15, pady = 10)
   
-        confirm_button = ttk.Button(self, text = "Confirm", command = lambda : [budget.change_budget, controller.show_frame(mainMenuPage)])
+        confirm_button = ttk.Button(self, text = "Confirm", command = lambda : [current_budget.change_budget, controller.show_frame(mainMenuPage)])
         confirm_button.grid(row = 4, column = 2, padx = 10, pady = 10)
 
         back_button = ttk.Button(self, text = "Back", command = lambda : controller.show_frame(mainMenuPage))
@@ -289,6 +294,18 @@ class changeWeeksPage(tk.Frame):
 
         back_button = ttk.Button(self, text = "Back", command = lambda : controller.show_frame(mainMenuPage))
         back_button.grid(row = 4, column = 4, padx = 10, pady = 10)
+
+
+class changeBudgetWeeks(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+
+        current_date = str(date.today())
+        current_date = tuple(current_date.split('-'))
+        print(current_date)
+        cal = Calendar(self, selectMode = "day", year = int(current_date[0]), month = int(current_date[1]), day = int(current_date[2]))
+        cal.pack(pady = 40, padx = 60)
+    
 
 def clear_entry(entry_box):
     entry_box.delete(0, "end")
